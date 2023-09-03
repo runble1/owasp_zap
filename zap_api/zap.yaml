@@ -1,0 +1,41 @@
+env:
+  contexts:
+    - name: "API Context"
+      urls:
+        - 'http://host.docker.internal:3001'
+
+  parameters:
+    failOnError: true
+    failOnWarning: true
+    progressToStdout: true
+
+jobs:
+  # 各種スキャンや設定のジョブ
+  - type: openapi  # OpenAPIジョブタイプ
+    parameters:
+      apiFile: "openapi.yaml"  # OpenAPI定義のURL
+      #context: "API Context"  # API Context
+
+  # パッシブスキャンの設定
+  - type: passiveScan-config
+    parameters:
+      maxAlertsPerRule: 10
+      scanOnlyInScope: true
+
+  # パッシブスキャン待機
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 5
+
+  # アクティブスキャン
+  - type: activeScan
+    parameters:
+      context: "API Context"
+      policy: "API Policy"
+
+  # レポート生成
+  - type: report
+    parameters:
+      #format: "html"
+      reportDir: "/zap/wrk/"
+      #reportName: "api_scan_report.html"

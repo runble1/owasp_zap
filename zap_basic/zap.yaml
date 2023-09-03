@@ -1,0 +1,43 @@
+---
+env:
+  contexts:
+    - name: "Example Context"
+      urls:
+        - "http://example.com"
+
+  parameters:
+    failOnError: true
+    failOnWarning: true
+    progressToStdout: true
+
+jobs:
+  # パッシブスキャンは spider や acctive scan のバックグラウンドで行われる
+  # パッシブスキャンの設定
+  - type: passiveScan-config
+    parameters:
+      maxAlertsPerRule: 10 #ルールごとの最大アラート数
+      scanOnlyInScope: true #スコープ内のURLだけをスキャン
+
+  # クロールして、アプリケーション内の各ページやリソース（画像、スクリプト、リンクなど）を発見
+  - type: spider
+    parameters:
+      context: "Example Context"
+      url: "http://example.com"
+      maxDepth: 5
+
+  # クロールされた各ページの内容を解析して、セキュリティ上の問題（例：コメント内の機密情報、セキュリティヘッダーの欠如など）を識別
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 5
+
+  # 様々な攻撃パターンをアプリケーションに対して実行
+  - type: activeScan
+    parameters:
+      context: "Example Context"
+      policy: "Default Policy"
+
+  - type: report  # レポート生成のジョブを追加
+    parameters:
+      #template: "traditional-html"  # 使用するテンプレート
+      template: "traditional-json"
+      reportDir: "/zap/wrk/"  # レポートの出力ディレクトリ

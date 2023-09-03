@@ -1,0 +1,23 @@
+openapi: 3.0.3
+info:
+  title: Exsample API
+  description: サンプル API
+  version: 1.0.0
+servers:
+  - url: 'http://host.docker.internal:3001'
+    description: ローカル環境
+  #- url: 'http://localhost:3001'
+  #  description: 開発環境
+paths:
+  "/api/v1/hello":
+    get:
+      summary: "hello"
+      responses:
+        "200":
+          description: "成功"
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "hello"
+
